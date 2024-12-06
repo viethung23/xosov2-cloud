@@ -3,6 +3,7 @@ var xsmb;
 
 XSMB = function() {
     var that = this;
+    var hostApi = 'https://apixosov2.viethungdev23.workers.dev';
 
     that.init = function() {
         // Tải file template từ header-base.html
@@ -77,147 +78,94 @@ XSMB = function() {
         }
     }
 
-    // that.GetXSMB = function () {
-    //     // Dữ liệu JSON
-    //     const data = {
-    //         region: "XSMB",
-    //         date: "30/11/2024",
-    //         location: "Nam Định",
-    //         codes: ["1XP", "4XP", "6XP", "7XP", "10XP", "12XP", "18XP", "19XP"],
-    //         prizes: {
-    //             "ĐB": ["93376"],
-    //             "1": ["06046"],
-    //             "2": ["42955", "75105"],
-    //             "3": ["17444", "75107", "11181", "82857", "12111", "25156"],
-    //             "4": ["3216", "1512", "4084", "6804"],
-    //             "5": ["8926", "8819", "7427", "5478", "8671", "6023"],
-    //             "6": ["990", "523", "985"],
-    //             "7": ["04", "53", "96", "93"]
-    //         }
-    //     };
-    
-    //     // Tạo nội dung HTML
-    //     let htmlContent = `
-    //         <section class="section" id="kqngay_${data.date.replace(/\//g, '')}">
-    //             <header class="section-header">
-    //                 <h1>${data.region} - Kết quả Xổ số Miền Bắc - SXMB ${data.date === "30/11/2024" ? "hôm nay" : data.date}</h1>
-    //                 <div class="site-link">
-    //                     <a title="${data.region}" href="/xo-so-mien-bac/${data.region.toLowerCase()}-p1.html">${data.region}</a>
-    //                     <a title="${data.region} Thứ 7" href="/${data.region.toLowerCase()}-thu-7.html">${data.region} Thứ 7</a>
-    //                     <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
-    //                     (${data.location})
-    //                 </div>
-    //             </header>
-    //             <div class="section-content">
-                // <table class="table-result">
-                //     <tbody>
-                //         <tr>
-                //             <th class="name-prize"></th>
-                //             <td class="number-prize">
-                //                 ${data.codes.map(code => `<span class="code-DB8">${code}</span>`).join(' ')}
-                //             </td>
-                //         </tr>
-                //         ${["ĐB", "1", "2", "3", "4", "5", "6", "7"].map(rank => `
-                //             <tr>
-                //                 <td>${rank}</td>
-                //                 <td>
-                //                     ${data.prizes[rank].map(prize => `
-                //                         <span class="${rank === "ĐB" ? "special-prize" : `prize${rank}`}">${prize}</span>
-                //                     `).join(' ')}
-                //                 </td>
-                //             </tr>
-                //         `).join('')}
-                //     </tbody>
-                // </table>
-    //         </div>
-    //         </section>
-    //     `;
-    
-    //     // Đưa nội dung vào DOM
-    //     $(".content-left").html(htmlContent);
-    // };
-
     that.GetXSMB = function (){
-        const dataList = [
-            {
-                region: "XSMB",
-                date: "30/11/2024",
-                location: "Nam Định",
-                codes: ["1XP", "2XP", "3XP", "4XP", "5XP", "6XP", "7XP", "8XP"],
-                prizes: {
-                    "ĐB": ["93376"],
-                    "1": ["06046"],
-                    "2": ["42955", "75105"],
-                    "3": ["17444", "75107", "11181", "82857", "12111", "25156"],
-                    "4": ["3216", "1512", "4084", "6804"],
-                    "5": ["8926", "8819", "7427", "5478", "8671", "6023"],
-                    "6": ["990", "523", "985"],
-                    "7": ["04", "53", "96", "93"]
+
+        // Thêm skeleton loader vào giao diện
+        const skeletonLoader = `
+        <section class="section" id="loading-section">
+            <header class="section-header">
+                <h1>Đang tải dữ liệu xổ số miền Bắc...</h1>
+            </header>
+            <div class="section-content">
+                <table class="table-result">
+                    <tbody>
+                        <tr>
+                            <th class="name-prize">...</th>
+                            <td class="number-prize">Đang tải...</td>
+                        </tr>
+                        ${["ĐB", "1", "2", "3", "4", "5", "6", "7"].map(rank => `
+                            <tr>
+                                <td>${rank}</td>
+                                <td>Đang tải...</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    `;
+        $(".content-left").html(skeletonLoader); // Hiển thị skeleton trước khi gọi API
+
+        $.ajax({
+            url: hostApi + '/api/sxmb',
+            type: 'GET',
+            dataType: 'json',
+            //data: dataPost,
+            success: function (response) {
+                if(response.length > 0){
+                    // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
+                    const dataList = response.map(record => JSON.parse(record.Value));
+
+                    const htmlContent = dataList.map(data => `
+                        <section class="section" id="kqngay_${data.date.replace(/\//g, '')}">
+                            <header class="section-header">
+                                <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date === "30/11/2024" ? "hôm nay" : data.date}</h1>
+                                <div class="site-link">
+                                    <a title="XSMB" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
+                                    <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
+                                </div>
+                            </header>
+                            <div class="section-content">
+                                <table class="table-result">
+                                    <tbody>
+                                        <tr>
+                                            <th class="name-prize"></th>
+                                            <td class="number-prize">
+                                                ${data.codes.map(code => `<span class="code-DB8">${code}</span>`).join(' ')}
+                                            </td>
+                                        </tr>
+                                        ${["ĐB", "1", "2", "3", "4", "5", "6", "7"].map(rank => `
+                                            <tr>
+                                                <td>${rank}</td>
+                                                <td>
+                                                    ${data.prizes[rank].map(prize => `
+                                                        <span class="${rank === "ĐB" ? "special-prize" : `prize${rank}`}">${prize}</span>
+                                                    `).join(' ')}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    `).join('');
+            
+                    $(".content-left").html(htmlContent);
+                }
+                else {
+                    console.warn("Không có dữ liệu từ API");
+                    $("#loading-section").find("h1").text("Không có dữ liệu để hiển thị");
                 }
             },
-            {
-                region: "XSMT",
-                date: "29/11/2024",
-                location: "Đà Nẵng",
-                codes: ["1XT", "2XT", "3XT", "4XT", "5XT", "6XT", "7XT", "8XT"],
-                prizes: {
-                    "ĐB": ["12345"],
-                    "1": ["54321"],
-                    "2": ["11223", "44556"],
-                    "3": ["33445", "66778", "88990", "11234", "55678", "99012"],
-                    "4": ["2233", "4455", "6677", "8899"],
-                    "5": ["9012", "3456", "7890", "1234", "5678", "9012"],
-                    "6": ["234", "567", "890"],
-                    "7": ["12", "34", "56", "78"]
-                }
+            error: function (response) {
+                console.error("Lỗi khi gọi API:", response);
+                $("#loading-section").find("h1").text("Lỗi khi tải dữ liệu. Vui lòng thử lại sau");
             }
-        ];
-    
-        // Duyệt qua danh sách data và tạo HTML
-        const htmlContent = dataList.map(data => `
-            <section class="section" id="kqngay_${data.date.replace(/\//g, '')}">
-                <header class="section-header">
-                    <h1>${data.region} - Kết quả xổ số ${data.location} - SX${data.region} ${data.date === "30/11/2024" ? "hôm nay" : data.date}</h1>
-                    <div class="site-link">
-                        <a title="${data.region}" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
-                        <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
-                    </div>
-                </header>
-                <div class="section-content">
-                    <table class="table-result">
-                        <tbody>
-                            <tr>
-                                <th class="name-prize"></th>
-                                <td class="number-prize">
-                                    ${data.codes.map(code => `<span class="code-DB8">${code}</span>`).join(' ')}
-                                </td>
-                            </tr>
-                            ${["ĐB", "1", "2", "3", "4", "5", "6", "7"].map(rank => `
-                                <tr>
-                                    <td>${rank}</td>
-                                    <td>
-                                        ${data.prizes[rank].map(prize => `
-                                            <span class="${rank === "ĐB" ? "special-prize" : `prize${rank}`}">${prize}</span>
-                                        `).join(' ')}
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        `).join('');
-    
-        // Đưa nội dung vào DOM
-        $(".content-left").html(htmlContent);
+          });
     }
 
     // luôn luôn gọi hàm init khi khởi tạo new
     that.init();
 }
-
-// $(document).ready(function () {
-//     xoso_base = new Base();
-// });
 
 jQuery(function () { xsmb = new XSMB(); });
