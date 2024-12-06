@@ -6,10 +6,31 @@ XSMB = function() {
     var hostApi = 'https://apixosov2.viethungdev23.workers.dev';
 
     that.init = function() {
+        that.updateDateTime(); // Cập nhật thời gian sau khi append
         that.GetXSMB();
         that.OnclickAi();
     };
 
+    // hàm lấy thời gian hiện tại 
+    that.updateDateTime = function(){
+        const now = new Date();
+        // Lấy ngày, tháng, năm
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Tháng trong JS bắt đầu từ 0
+        const year = now.getFullYear();
+        // Lấy thứ trong tuần
+        const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+        const dayOfWeek = daysOfWeek[now.getDay()];
+        // Định dạng thời gian theo yêu cầu
+        const formattedDateTime = `Hôm nay: ${dayOfWeek} ngày ${day}/${month}/${year}`;
+        // Cập nhật nội dung của thẻ div với định dạng thời gian
+        // Kiểm tra phần tử .header-time trước khi cập nhật nội dung
+        if ($(".header-time").length > 0) {
+            $(".header-time").text(formattedDateTime);
+        } else {
+            console.error("Không tìm thấy phần tử .header-time");
+        }
+    }
 
     that.OnclickAi = function(){
         $('.tab-button').click(function () {
