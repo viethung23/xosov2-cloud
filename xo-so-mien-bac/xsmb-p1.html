@@ -7,10 +7,36 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- <script src="/lib/jquery-3.7.1.min.js"></script> -->
     <link rel="stylesheet" href="/css/index2.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Load header
+            fetch("/templateHtml/header.html")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("header-placeholder").innerHTML = data;
+
+                    // Thêm logic xử lý sau khi header đã được load
+                    const now = new Date();
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const year = now.getFullYear();
+                    const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                    const dayOfWeek = daysOfWeek[now.getDay()];
+                    const formattedDateTime = `Hôm nay: ${dayOfWeek} ngày ${day}/${month}/${year}`;
+                    
+                    if ($(".header-time").length > 0) {
+                        $(".header-time").text(formattedDateTime);
+                    } else {
+                        console.error("Không tìm thấy phần tử .header-time");
+                    }
+                })
+                .catch(error => console.error("Lỗi khi load header:", error));
+        });
+    </script>
 </head>
 <body>
     <!-- Template Header -->
-    <header class=header></header>
+    <header id="header-placeholder" class="header"></header>
     <main>
         <div class=main-content>
             <div class=breadcrumb>
@@ -101,7 +127,7 @@
                 </div>
                 <div class=widget>
                     <div class="widget-title widget_bg">
-                        <h3>AI dự đoán kết quả xổ số</h3>
+                        <h3>AI thống kê kết quả xổ số</h3>
                     </div>
                     <div class=widget-container>
                         <div class="widget-container-ai">
