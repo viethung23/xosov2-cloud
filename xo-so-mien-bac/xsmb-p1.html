@@ -7,15 +7,18 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- <script src="/lib/jquery-3.7.1.min.js"></script> -->
     <link rel="stylesheet" href="/css/index2.css">
+    <link rel="prefetch" href="/templateHtml/header.html">
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Load header
-            fetch("/templateHtml/header.html")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("header-placeholder").innerHTML = data;
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                // Fetch header.html
+                const response = await fetch("/templateHtml/header.html");
+                const data = await response.text();
+                document.getElementById("header-placeholder").innerHTML = data;
 
-                    // Thêm logic xử lý sau khi header đã được load
+                // Xử lý logic hiển thị ngày sau khi load header
+                const headerTime = document.querySelector(".header-time");
+                if (headerTime) {
                     const now = new Date();
                     const day = String(now.getDate()).padStart(2, '0');
                     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -23,14 +26,13 @@
                     const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
                     const dayOfWeek = daysOfWeek[now.getDay()];
                     const formattedDateTime = `Hôm nay: ${dayOfWeek} ngày ${day}/${month}/${year}`;
-                    
-                    if ($(".header-time").length > 0) {
-                        $(".header-time").text(formattedDateTime);
-                    } else {
-                        console.error("Không tìm thấy phần tử .header-time");
-                    }
-                })
-                .catch(error => console.error("Lỗi khi load header:", error));
+                    headerTime.textContent = formattedDateTime;
+                } else {
+                    console.error("Không tìm thấy phần tử .header-time");
+                }
+            } catch (error) {
+                console.error("Lỗi khi load header:", error);
+            }
         });
     </script>
 </head>
