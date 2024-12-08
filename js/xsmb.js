@@ -91,7 +91,7 @@ XSMB = function() {
         $(".content-left").html(skeletonLoader); // Hiển thị skeleton trước khi gọi API
 
         $.ajax({
-            url: hostApi + '/api/sxmb',
+            url: hostApi + '/api/xsmb',
             type: 'GET',
             dataType: 'json',
             //data: dataPost,
@@ -103,7 +103,7 @@ XSMB = function() {
                     const htmlContent = dataList.map(data => `
                         <section class="section" id="kqngay_${data.date.replace(/\//g, '')}">
                             <header class="section-header">
-                                <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date === "30/11/2024" ? "hôm nay" : data.date}</h1>
+                                <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h1>
                                 <div class="site-link">
                                     <a title="XSMB" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
                                     <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>

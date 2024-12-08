@@ -64,10 +64,10 @@ Base = function() {
     that.GetXSMN = function () {
         const fullPath = $(location).attr('pathname');
         if(fullPath == '/xo-so-mien-nam/xsmn-p1'){
-            hostApi = hostApi + '/api/sxmn';
+            hostApi = hostApi + '/api/xsmn';
         }
         else {
-            hostApi = hostApi + '/api/sxmt';
+            hostApi = hostApi + '/api/xsmt';
         }
 
         // Hiển thị giao diện skeleton ngay lập tức
