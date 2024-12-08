@@ -140,15 +140,15 @@ Index = function() {
                     let htmlContent = dataArray.map(data => `
                         <section class="section" id="${data.loai}_kqngay_${data.code}"> 
                             <header class="section-header">
-                                <h1>XSMN - Kết quả xổ số Miền Nam - XSMN ${that.getDisplayText(data.date)}</h1>
+                                <h1>XSMN - Kết quả xổ số Miền Trung - XSMT ${that.getDisplayText(data.date)}</h1>
                                 <h2 class="site-link">
-                                    <a title="XSMN" href="/xo-so-mien-nam/xsmn-p1.html">XSMN</a>
-                                    <a title="XSMN ${data.date}" href="/xsmn-${data.code}.html">XSMN ${data.date}</a> 
+                                    <a title="XSMT" href="/xo-so-mien-trung/xsmt-p1.html">XSMT</a>
+                                    <a title="XSMT ${data.date}" href="/xsmt-${data.code}.html">XSMT ${data.date}</a> 
                                 </h2>
                             </header>
                 
                             <div class="section-content" id="${data.loai}_kqngay_${data.code}">
-                                <table class="table-result table-xsmn">
+                                <table class="table-result table-xsmt">
                                     <thead>
                                         <tr>
                                             <th class="name-prize">Giải</th>
