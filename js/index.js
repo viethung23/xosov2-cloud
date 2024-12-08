@@ -8,7 +8,7 @@ Index = function() {
         $(".content-left").html('');
         that.updateDateTime();
         that.loadAllData(); // Gọi hàm load dữ liệu bất đồng bộ
-        that.OnclickAi();
+        //that.OnclickAi();
     };
 
     // hàm lấy thời gian hiện tại 
@@ -32,19 +32,19 @@ Index = function() {
         }
     }
 
-    that.OnclickAi = function(){
-        $('.tab-button').click(function () {
-            // Remove active class from all buttons
-            $('.tab-button').removeClass('active');
+    // that.OnclickAi = function(){
+    //     $('.tab-button').click(function () {
+    //         // Remove active class from all buttons
+    //         $('.tab-button').removeClass('active');
             
-            // Hide all tab contents
-            $('.tab-content').hide();
+    //         // Hide all tab contents
+    //         $('.tab-content').hide();
             
-            // Add active class to clicked button and show corresponding content
-            $(this).addClass('active');
-            $('#' + $(this).data('tab')).show();
-        });
-    }
+    //         // Add active class to clicked button and show corresponding content
+    //         $(this).addClass('active');
+    //         $('#' + $(this).data('tab')).show();
+    //     });
+    // }
 
     that.getDisplayText = function(dateString) {
         const targetDate = new Date(dateString); // Chuyển chuỗi thành Date
@@ -70,7 +70,6 @@ Index = function() {
             dataType: 'json',
             //data: dataPost,
             success: function (response) {
-                console.log(response)
                 if(response.length > 0){
                     // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
                     const dataArray = response.map(record => JSON.parse(record.Value));
@@ -132,7 +131,6 @@ Index = function() {
             dataType: 'json',
             //data: dataPost,
             success: function (response) {
-                console.log(response)
                 if(response.length > 0){
                     // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
                     const dataArray = response.map(record => JSON.parse(record.Value));
@@ -261,7 +259,7 @@ Index = function() {
     that.loadAllData = function () {
         Promise.all([that.GetXSMN(), that.GetXSMT(), that.GetXSMB()])
             .then(function () {
-                console.log("Tất cả dữ liệu đã được tải xong");
+                //console.log("Tất cả dữ liệu đã được tải xong");
             })
             .catch(function (error) {
                 console.error("Có lỗi khi tải dữ liệu:", error);

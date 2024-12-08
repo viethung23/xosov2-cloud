@@ -6,6 +6,7 @@ XSMB = function() {
     var hostApi = 'https://apixosov2.viethungdev23.workers.dev';
 
     that.init = function() {
+        $(".content-left").html('');
         that.updateDateTime(); // Cập nhật thời gian sau khi append
         that.GetXSMB();
         that.OnclickAi();

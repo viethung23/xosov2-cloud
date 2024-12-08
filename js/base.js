@@ -5,6 +5,7 @@ Base = function() {
     var hostApi = 'https://apixosov2.viethungdev23.workers.dev';
 
     that.init = function() {
+        $(".content-left").html('');
         that.updateDateTime();
         that.GetXSMN();
         that.OnclickAi();
@@ -109,7 +110,6 @@ Base = function() {
             dataType: 'json',
             //data: dataPost,
             success: function (response) {
-                console.log(response)
                 if (response.length > 0) {
                     // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
                     const dataArray = response.map(record => JSON.parse(record.Value));
