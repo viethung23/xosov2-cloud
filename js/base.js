@@ -63,7 +63,7 @@ Base = function() {
 
     that.GetXSMN = function () {
         const fullPath = $(location).attr('pathname');
-        if(fullPath == '/xo-so-mien-nam/xsmn-p1'){
+        if(fullPath == '/xo-so-mien-nam/xsmn-p1' || fullPath =='/xo-so-mien-nam/xsmn-p1.html'){
             hostApi = hostApi + '/api/xsmn';
         }
         else {
@@ -110,58 +110,79 @@ Base = function() {
             //data: dataPost,
             success: function (response) {
                 console.log(response)
-                if(response.length > 0){
+                if (response.length > 0) {
                     // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
                     const dataArray = response.map(record => JSON.parse(record.Value));
-
-                    let htmlContent = dataArray.map(data => `
-                        <section class="section" id="${data.loai}_kqngay_${data.code}"> 
+                
+                    // Tạo nội dung HTML cho từng phần tử
+                    const htmlContent = dataArray.map(data => {
+                        const isMN = data.loai === "mn";
+                        const regionName = isMN ? "Miền Nam" : "Miền Trung";
+                        const regionCode = isMN ? "xsmn" : "xsmt";
+                        const mainURL = isMN ? "/xo-so-mien-nam/xsmn-p1.html" : "/xo-so-mien-trung/xsmt-p1.html";
+                        const displayDate = that.getDisplayText(data.date);
+                
+                        // Tạo tiêu đề
+                        const headerHTML = `
                             <header class="section-header">
-                                <h1>XSMN - Kết quả xổ số Miền Nam - XSMN ${that.getDisplayText(data.date)}</h1>
+                                <h1>${regionCode.toUpperCase()} - Kết quả xổ số ${regionName} - ${regionCode.toUpperCase()} ${displayDate}</h1>
                                 <h2 class="site-link">
-                                    <a title="XSMN" href="/xo-so-mien-nam/xsmn-p1.html">XSMN</a>
-                                    <a title="XSMN ${data.date}" href="/xsmn-${data.code}.html">XSMN ${data.date}</a> 
+                                    <a title="${regionCode.toUpperCase()}" href="${mainURL}">${regionCode.toUpperCase()}</a>
+                                    <a title="${regionCode.toUpperCase()} ${data.date}" href="/${regionCode}-${data.code}.html">${regionCode.toUpperCase()} ${data.date}</a>
                                 </h2>
                             </header>
+                        `;
                 
-                            <div class="section-content" id="${data.loai}_kqngay_${data.code}">
-                                <table class="table-result table-xsmn">
-                                    <thead>
+                        // Tạo bảng kết quả xổ số
+                        const tableHTML = `
+                            <table class="table-result table-${regionCode}">
+                                <thead>
+                                    <tr>
+                                        <th class="name-prize">Giải</th>
+                                        ${data.provinces.map(province => `<th class="prize-col3"><h3>${province}</h3></th>`).join("")}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.prizes.map(prize => `
                                         <tr>
-                                            <th class="name-prize">Giải</th>
-                                            ${data.provinces.map(province => `<th class="prize-col3"><h3>${province}</h3></th>`).join("")}
+                                            <th>${prize.rank}</th>
+                                            ${data.provinces.map(province => `
+                                                <td>
+                                                    <span class="xs_prize ${prize.rank === 'ĐB' ? 'prize_db' : ''}">
+                                                        ${prize[province].join("<br>")}
+                                                    </span>
+                                                </td>
+                                            `).join("")}
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${data.prizes.map(prize => `
-                                            <tr>
-                                                <th>${prize.rank}</th>
-                                                ${data.provinces.map(province => `
-                                                    <td><span class="xs_prize ${prize.rank == 'ĐB' ? 'prize_db' : ''}">${prize[province].join("<br>")}</span></td>
-                                                `).join("")}
-                                            </tr>
-                                        `).join("")}
-                                    </tbody>
-                                </table> 
-                                <div class=div-table>
-                                    <div class="config-item active" value=0>Đầy đủ</div>
-                                    <div class=config-item value=2>2 số</div>
-                                    <div class=config-item value=3>3 số</div>
-                                    <div class=number-config data-number=0>0</div>
-                                    <div class=number-config data-number=1>1</div>
-                                    <div class=number-config data-number=2>2</div>
-                                    <div class=number-config data-number=3>3</div>
-                                    <div class=number-config data-number=4>4</div>
-                                    <div class=number-config data-number=5>5</div>
-                                    <div class=number-config data-number=6>6</div>
-                                    <div class=number-config data-number=7>7</div>
-                                    <div class=number-config data-number=8>8</div>
-                                    <div class=number-config data-number=9>9</div>
-                                </div>   
-                            </div>   
-                        </section>     
-                    `).join("");
-            
+                                    `).join("")}
+                                </tbody>
+                            </table>
+                        `;
+                
+                        // Tạo các tùy chọn cấu hình
+                        const configHTML = `
+                            <div class="div-table">
+                                <div class="config-item active" value="0">Đầy đủ</div>
+                                <div class="config-item" value="2">2 số</div>
+                                <div class="config-item" value="3">3 số</div>
+                                ${[...Array(10).keys()].map(num => `
+                                    <div class="number-config" data-number="${num}">${num}</div>
+                                `).join("")}
+                            </div>
+                        `;
+                
+                        // Tạo nội dung section
+                        return `
+                            <section class="section" id="${data.loai}_kqngay_${data.code}">
+                                ${headerHTML}
+                                <div class="section-content" id="${data.loai}_kqngay_${data.code}">
+                                    ${tableHTML}
+                                    ${configHTML}
+                                </div>
+                            </section>
+                        `;
+                    }).join("");
+                
                     // Đưa nội dung vào thẻ div
                     $(".content-left").html(htmlContent);
                 }

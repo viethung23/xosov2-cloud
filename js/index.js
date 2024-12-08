@@ -140,7 +140,7 @@ Index = function() {
                     let htmlContent = dataArray.map(data => `
                         <section class="section" id="${data.loai}_kqngay_${data.code}"> 
                             <header class="section-header">
-                                <h1>XSMN - Kết quả xổ số Miền Trung - XSMT ${that.getDisplayText(data.date)}</h1>
+                                <h1>XSMT - Kết quả xổ số Miền Trung - XSMT ${that.getDisplayText(data.date)}</h1>
                                 <h2 class="site-link">
                                     <a title="XSMT" href="/xo-so-mien-trung/xsmt-p1.html">XSMT</a>
                                     <a title="XSMT ${data.date}" href="/xsmt-${data.code}.html">XSMT ${data.date}</a> 
@@ -193,47 +193,59 @@ Index = function() {
             dataType: 'json',
             //data: dataPost,
             success: function (response) {
-                if(response.length > 0){
+                if (response.length > 0) {
                     // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
                     const dataList = response.map(record => JSON.parse(record.Value));
-
-                    const htmlContent = dataList.map(data => `
+        
+                    // Hàm tạo tiêu đề
+                    const createHeader = (data) => `
+                        <header class="section-header">
+                            <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h1>
+                            <div class="site-link">
+                                <a title="XSMB" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
+                                <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
+                            </div>
+                        </header>
+                    `;
+        
+                    // Hàm tạo bảng kết quả xổ số
+                    const createTable = (data) => `
+                        <table class="table-result">
+                            <tbody>
+                                <tr>
+                                    <th class="name-prize"></th>
+                                    <td class="number-prize">
+                                        ${data.codes.map(code => `<span class="code-DB8">${code}</span>`).join(' ')}
+                                    </td>
+                                </tr>
+                                ${["ĐB", "1", "2", "3", "4", "5", "6", "7"].map(rank => `
+                                    <tr>
+                                        <td>${rank}</td>
+                                        <td>
+                                            ${data.prizes[rank]?.map(prize => `
+                                                <span class="${rank === "ĐB" ? "special-prize" : `prize${rank}`}">${prize}</span>
+                                            `).join(' ') || ""}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+        
+                    // Hàm tạo section
+                    const createSection = (data) => `
                         <section class="section" id="kqngay_${data.date.replace(/\//g, '')}">
-                            <header class="section-header">
-                                <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h1>
-                                <div class="site-link">
-                                    <a title="XSMB" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
-                                    <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
-                                </div>
-                            </header>
+                            ${createHeader(data)}
                             <div class="section-content">
-                                <table class="table-result">
-                                    <tbody>
-                                        <tr>
-                                            <th class="name-prize"></th>
-                                            <td class="number-prize">
-                                                ${data.codes.map(code => `<span class="code-DB8">${code}</span>`).join(' ')}
-                                            </td>
-                                        </tr>
-                                        ${["ĐB", "1", "2", "3", "4", "5", "6", "7"].map(rank => `
-                                            <tr>
-                                                <td>${rank}</td>
-                                                <td>
-                                                    ${data.prizes[rank].map(prize => `
-                                                        <span class="${rank === "ĐB" ? "special-prize" : `prize${rank}`}">${prize}</span>
-                                                    `).join(' ')}
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
+                                ${createTable(data)}
                             </div>
                         </section>
-                    `).join('');
-            
-                    $(".content-left").append(htmlContent);
-                }
-                else {
+                    `;
+        
+                    // Tạo nội dung HTML
+                    const htmlContent = dataList.map(createSection).join('');
+                    $(".content-left").html(htmlContent);
+                } else {
                     console.warn("Không có dữ liệu từ API");
                     $("#loading-section").find("h1").text("Không có dữ liệu để hiển thị");
                 }
