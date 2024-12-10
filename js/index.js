@@ -5,7 +5,7 @@ Index = function() {
     var hostApi = 'https://apixosov2.viethungdev23.workers.dev';
 
     that.init = function() {
-        $(".content-left").html('');
+        $(".content-left").append('<div class="lottery-results"></div>');
         that.updateDateTime();
         that.loadAllData(); // Gọi hàm load dữ liệu bất đồng bộ
         //that.OnclickAi();
@@ -62,204 +62,204 @@ Index = function() {
         }
     }
 
-    that.GetXSMN = function () {
-        var apiXSMN = hostApi + '/api/xsmn?limit=1';
-        $.ajax({
-            url: apiXSMN,
-            type: 'GET',
-            dataType: 'json',
-            //data: dataPost,
-            success: function (response) {
-                if(response.length > 0){
-                    // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
-                    const dataArray = response.map(record => JSON.parse(record.Value));
-
-                    let htmlContent = dataArray.map(data => `
-                        <section class="section" id="${data.loai}_kqngay_${data.code}"> 
-                            <header class="section-header">
-                                <h1>XSMN - Kết quả xổ số Miền Nam - XSMN ${that.getDisplayText(data.date)}</h1>
-                                <h2 class="site-link">
-                                    <a title="XSMN" href="/xo-so-mien-nam/xsmn-p1.html">XSMN</a>
-                                    <a title="XSMN ${data.date}" href="/xsmn-${data.code}.html">XSMN ${data.date}</a> 
-                                </h2>
-                            </header>
-                
-                            <div class="section-content" id="${data.loai}_kqngay_${data.code}">
-                                <table class="table-result table-xsmn">
-                                    <thead>
-                                        <tr>
-                                            <th class="name-prize">Giải</th>
-                                            ${data.provinces.map(province => `<th class="prize-col3"><h3>${province}</h3></th>`).join("")}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${data.prizes.map(prize => `
-                                            <tr>
-                                                <th>${prize.rank}</th>
-                                                ${data.provinces.map(province => `
-                                                    <td><span class="xs_prize ${prize.rank == 'ĐB' ? 'prize_db' : ''}">${prize[province].join("<br>")}</span></td>
-                                                `).join("")}
-                                            </tr>
-                                        `).join("")}
-                                    </tbody>
-                                </table> 
-                            </div>   
-                        </section>     
-                    `).join("");
-            
-                    // Đưa nội dung vào thẻ div
-                    $(".content-left").append(htmlContent);
-                }
-                else {
-                    // Không có dữ liệu từ API
-                    console.warn("Không có dữ liệu từ API");
-                    $("#loading-section").find("h1").text("Không có dữ liệu để hiển thị");
-                }
-            },
-            error: function (response) {
-                console.error("Lỗi khi gọi API:", response);
-                $("#loading-section").find("h1").text("Lỗi khi tải dữ liệu. Vui lòng thử lại sau");
-            }
-          });
-    }
-
-    that.GetXSMT = function () {
-        var apiXSMT = hostApi + '/api/xsmt?limit=1';
-        $.ajax({
-            url: apiXSMT,
-            type: 'GET',
-            dataType: 'json',
-            //data: dataPost,
-            success: function (response) {
-                if(response.length > 0){
-                    // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
-                    const dataArray = response.map(record => JSON.parse(record.Value));
-
-                    let htmlContent = dataArray.map(data => `
-                        <section class="section" id="${data.loai}_kqngay_${data.code}"> 
-                            <header class="section-header">
-                                <h1>XSMT - Kết quả xổ số Miền Trung - XSMT ${that.getDisplayText(data.date)}</h1>
-                                <h2 class="site-link">
-                                    <a title="XSMT" href="/xo-so-mien-trung/xsmt-p1.html">XSMT</a>
-                                    <a title="XSMT ${data.date}" href="/xsmt-${data.code}.html">XSMT ${data.date}</a> 
-                                </h2>
-                            </header>
-                
-                            <div class="section-content" id="${data.loai}_kqngay_${data.code}">
-                                <table class="table-result table-xsmt">
-                                    <thead>
-                                        <tr>
-                                            <th class="name-prize">Giải</th>
-                                            ${data.provinces.map(province => `<th class="prize-col3"><h3>${province}</h3></th>`).join("")}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${data.prizes.map(prize => `
-                                            <tr>
-                                                <th>${prize.rank}</th>
-                                                ${data.provinces.map(province => `
-                                                    <td><span class="xs_prize ${prize.rank == 'ĐB' ? 'prize_db' : ''}">${prize[province].join("<br>")}</span></td>
-                                                `).join("")}
-                                            </tr>
-                                        `).join("")}
-                                    </tbody>
-                                </table> 
-                            </div>   
-                        </section>     
-                    `).join("");
-            
-                    // Đưa nội dung vào thẻ div
-                    $(".content-left").append(htmlContent);
-                }
-                else {
-                    // Không có dữ liệu từ API
-                    console.warn("Không có dữ liệu từ API");
-                    $("#loading-section").find("h1").text("Không có dữ liệu để hiển thị");
-                }
-            },
-            error: function (response) {
-                console.error("Lỗi khi gọi API:", response);
-                $("#loading-section").find("h1").text("Lỗi khi tải dữ liệu. Vui lòng thử lại sau");
-            }
-          });
-    }
-
+    // Hàm gọi API song song và xử lý kết quả
     that.GetXSMB = function (){
-        $.ajax({
-            url: hostApi + '/api/xsmb?limit=1',
-            type: 'GET',
-            dataType: 'json',
-            //data: dataPost,
-            success: function (response) {
-                if (response.length > 0) {
-                    // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
-                    const dataList = response.map(record => JSON.parse(record.Value));
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: hostApi + '/api/xsmb?limit=1',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.length > 0) {
+                        const dataList = response.map(record => JSON.parse(record.Value));
         
-                    // Hàm tạo tiêu đề
-                    const createHeader = (data) => `
-                        <header class="section-header">
-                            <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h1>
-                            <div class="site-link">
-                                <a title="XSMB" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
-                                <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
-                            </div>
-                        </header>
-                    `;
+                        const createHeader = (data) => 
+                            `<header class="section-header">
+                                <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h1>
+                                <div class="site-link">
+                                    <a title="XSMB" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
+                                    <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
+                                </div>
+                            </header>`;
         
-                    // Hàm tạo bảng kết quả xổ số
-                    const createTable = (data) => `
-                        <table class="table-result">
-                            <tbody>
-                                <tr>
-                                    <th class="name-prize"></th>
-                                    <td class="number-prize">
-                                        ${data.codes.map(code => `<span class="code-DB8">${code}</span>`).join(' ')}
-                                    </td>
-                                </tr>
-                                ${["ĐB", "1", "2", "3", "4", "5", "6", "7"].map(rank => `
+                        const createTable = (data) => {
+                            let tableHtml = `
+                            <table class="table-result">
+                                <tbody>
+                                    <tr>
+                                        <th class="name-prize"></th>
+                                        <td class="number-prize">
+                                            ${data.codes.map(code => `<span class="code-DB8">${code}</span>`).join(' ')}
+                                        </td>
+                                    </tr>`;
+        
+                            const ranks = ["ĐB", "1", "2", "3", "4", "5", "6", "7"];
+                            ranks.forEach(rank => {
+                                tableHtml += `
                                     <tr>
                                         <td>${rank}</td>
                                         <td>
-                                            ${data.prizes[rank]?.map(prize => `
-                                                <span class="${rank === "ĐB" ? "special-prize" : `prize${rank}`}">${prize}</span>
-                                            `).join(' ') || ""}
+                                            ${(data.prizes[rank] || []).map(prize => 
+                                                `<span class="${rank === "ĐB" ? "special-prize" : `prize${rank}`}">${prize}</span>`
+                                            ).join(' ') || ""}
                                         </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
+                                    </tr>`;
+                            });
         
-                    // Hàm tạo section
-                    const createSection = (data) => `
-                        <section class="section" id="kqngay_${data.date.replace(/\//g, '')}">
-                            ${createHeader(data)}
-                            <div class="section-content">
-                                ${createTable(data)}
-                            </div>
-                        </section>
-                    `;
+                            tableHtml += `
+                                </tbody>
+                            </table>`;
         
-                    // Tạo nội dung HTML
-                    const htmlContent = dataList.map(createSection).join('');
-                    $(".content-left").html(htmlContent);
-                } else {
-                    console.warn("Không có dữ liệu từ API");
-                    $("#loading-section").find("h1").text("Không có dữ liệu để hiển thị");
+                            return tableHtml;
+                        };
+        
+                        let fullHtml = '';
+                        dataList.forEach(data => {
+                            fullHtml += `
+                                ${createHeader(data)}
+                                <div class="section-content">
+                                    ${createTable(data)}
+                                </div>`;
+                        });
+        
+                        $("#xsmb-section").html(fullHtml);
+                        resolve();
+                    } else {
+                        $("#xsmb-section").html("<div class='error'>Không có dữ liệu để hiển thị</div>");
+                        reject("Không có dữ liệu");
+                    }
+                },
+                error: function (response) {
+                    $("#xsmb-section").html("<div class='error'>Lỗi khi tải dữ liệu. Vui lòng thử lại sau</div>");
+                    reject(response);
                 }
-            },
-            error: function (response) {
-                console.error("Lỗi khi gọi API:", response);
-                $("#loading-section").find("h1").text("Lỗi khi tải dữ liệu. Vui lòng thử lại sau");
-            }
-          });
+            });
+        });
     }
 
+    that.GetXSMN = function () {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: hostApi + '/api/xsmn?limit=1',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if(response.length > 0){
+                        const dataArray = response.map(record => JSON.parse(record.Value));
+    
+                        let fullHtml = '';
+                        dataArray.forEach(data => {
+                            fullHtml += `
+                                <header class="section-header">
+                                    <h1>XSMN - Kết quả xổ số Miền Nam - XSMN ${that.getDisplayText(data.date)}</h1>
+                                    <h2 class="site-link">
+                                        <a title="XSMN" href="/xo-so-mien-nam/xsmn-p1.html">XSMN</a>
+                                        <a title="XSMN ${data.date}" href="/xsmn-${data.code}.html">XSMN ${data.date}</a> 
+                                    </h2>
+                                </header>
+                
+                                <div class="section-content">
+                                    <table class="table-result table-xsmn">
+                                        <thead>
+                                            <tr>
+                                                <th class="name-prize">Giải</th>
+                                                ${data.provinces.map(province => `<th class="prize-col3"><h3>${province}</h3></th>`).join("")}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${data.prizes.map(prize => 
+                                                `<tr>
+                                                    <th>${prize.rank}</th>
+                                                    ${data.provinces.map(province => 
+                                                        `<td><span class="xs_prize ${prize.rank == 'ĐB' ? 'prize_db' : ''}">${prize[province].join("<br>")}</span></td>`
+                                                    ).join("")}
+                                                </tr>`
+                                            ).join("")}
+                                        </tbody>
+                                    </table> 
+                                </div>`;
+                        });
+                
+                        $("#xsmn-section").html(fullHtml);
+                        resolve();
+                    }
+                    else {
+                        $("#xsmn-section").html("<div class='error'>Không có dữ liệu để hiển thị</div>");
+                        reject("Không có dữ liệu");
+                    }
+                },
+                error: function (response) {
+                    $("#xsmn-section").html("<div class='error'>Lỗi khi tải dữ liệu. Vui lòng thử lại sau</div>");
+                    reject(response);
+                }
+            });
+        });
+    }
+
+    that.GetXSMT = function () {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: hostApi + '/api/xsmt?limit=1',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if(response.length > 0){
+                        const dataArray = response.map(record => JSON.parse(record.Value));
+    
+                        let fullHtml = '';
+                        dataArray.forEach(data => {
+                            fullHtml += `
+                                <header class="section-header">
+                                    <h1>XSMT - Kết quả xổ số Miền Trung - XSMT ${that.getDisplayText(data.date)}</h1>
+                                    <h2 class="site-link">
+                                        <a title="XSMT" href="/xo-so-mien-trung/xsmt-p1.html">XSMT</a>
+                                        <a title="XSMT ${data.date}" href="/xsmt-${data.code}.html">XSMT ${data.date}</a> 
+                                    </h2>
+                                </header>
+                
+                                <div class="section-content">
+                                    <table class="table-result table-xsmt">
+                                        <thead>
+                                            <tr>
+                                                <th class="name-prize">Giải</th>
+                                                ${data.provinces.map(province => `<th class="prize-col3"><h3>${province}</h3></th>`).join("")}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${data.prizes.map(prize => 
+                                                `<tr>
+                                                    <th>${prize.rank}</th>
+                                                    ${data.provinces.map(province => 
+                                                        `<td><span class="xs_prize ${prize.rank == 'ĐB' ? 'prize_db' : ''}">${prize[province].join("<br>")}</span></td>`
+                                                    ).join("")}
+                                                </tr>`
+                                            ).join("")}
+                                        </tbody>
+                                    </table> 
+                                </div>`;
+                        });
+                
+                        $("#xsmt-section").html(fullHtml);
+                        resolve();
+                    }
+                    else {
+                        $("#xsmt-section").html("<div class='error'>Không có dữ liệu để hiển thị</div>");
+                        reject("Không có dữ liệu");
+                    }
+                },
+                error: function (response) {
+                    $("#xsmt-section").html("<div class='error'>Lỗi khi tải dữ liệu. Vui lòng thử lại sau</div>");
+                    reject(response);
+                }
+            });
+        });
+    }
+    
     // Hàm gọi API song song và xử lý kết quả
     that.loadAllData = function () {
         Promise.all([that.GetXSMN(), that.GetXSMT(), that.GetXSMB()])
             .then(function () {
-                //console.log("Tất cả dữ liệu đã được tải xong");
+                console.log("Tất cả dữ liệu đã được tải xong");
             })
             .catch(function (error) {
                 console.error("Có lỗi khi tải dữ liệu:", error);
