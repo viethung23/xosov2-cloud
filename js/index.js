@@ -75,7 +75,7 @@ Index = function() {
         
                         const createHeader = (data) => 
                             `<header class="section-header">
-                                <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h1>
+                                <h2>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h2>
                                 <div class="site-link">
                                     <a title="XSMB" href="/xo-so-${data.region.toLowerCase()}/${data.region.toLowerCase()}-p1.html">${data.region}</a>
                                     <a title="${data.region} ${data.date}" href="/${data.region.toLowerCase()}-${data.date.replace(/\//g, '-')}.html">${data.region} ${data.date}</a>
@@ -210,7 +210,7 @@ Index = function() {
                         dataArray.forEach(data => {
                             fullHtml += `
                                 <header class="section-header">
-                                    <h1>XSMT - Kết quả xổ số Miền Trung - XSMT ${that.getDisplayText(data.date)}</h1>
+                                    <h2>XSMT - Kết quả xổ số Miền Trung - XSMT ${that.getDisplayText(data.date)}</h2>
                                     <h2 class="site-link">
                                         <a title="XSMT" href="/xo-so-mien-trung/xsmt-p1.html">XSMT</a>
                                         <a title="XSMT ${data.date}" href="/xsmt-${data.code}.html">XSMT ${data.date}</a> 
