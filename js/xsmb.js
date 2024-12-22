@@ -1,4 +1,3 @@
-//Type.registerNamespace("Xoso");
 var xsmb;
 
 XSMB = function() {
@@ -6,7 +5,7 @@ XSMB = function() {
     var hostApi = 'https://apixosov2.viethungdev23.workers.dev';
 
     that.init = function() {
-        $(".content-left").html('');
+        document.querySelector(".content-left").innerHTML = '';
         that.updateDateTime(); // Cập nhật thời gian sau khi append
         that.GetXSMB();
         that.OnclickAi();
@@ -15,57 +14,54 @@ XSMB = function() {
     // hàm lấy thời gian hiện tại 
     that.updateDateTime = function(){
         const now = new Date();
-        // Lấy ngày, tháng, năm
         const day = String(now.getDate()).padStart(2, '0');
-        const month = String(now.getMonth() + 1).padStart(2, '0'); // Tháng trong JS bắt đầu từ 0
+        const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = now.getFullYear();
-        // Lấy thứ trong tuần
         const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
         const dayOfWeek = daysOfWeek[now.getDay()];
-        // Định dạng thời gian theo yêu cầu
         const formattedDateTime = `Hôm nay: ${dayOfWeek} ngày ${day}/${month}/${year}`;
-        // Cập nhật nội dung của thẻ div với định dạng thời gian
-        // Kiểm tra phần tử .header-time trước khi cập nhật nội dung
-        if ($(".header-time").length > 0) {
-            $(".header-time").text(formattedDateTime);
+
+        const headerTime = document.querySelector(".header-time");
+        if (headerTime) {
+            headerTime.textContent = formattedDateTime;
         } else {
             console.error("Không tìm thấy phần tử .header-time");
         }
     }
 
     that.OnclickAi = function(){
-        $('.tab-button').click(function () {
-            // Remove active class from all buttons
-            $('.tab-button').removeClass('active');
-            
-            // Hide all tab contents
-            $('.tab-content').hide();
-            
-            // Add active class to clicked button and show corresponding content
-            $(this).addClass('active');
-            $('#' + $(this).data('tab')).show();
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                const tabContent = document.getElementById(tabId);
+                if (tabContent) {
+                    tabContent.style.display = 'block';
+                }
+            });
         });
     }
 
     that.getDisplayText = function(dateString) {
-        const targetDate = new Date(dateString); // Chuyển chuỗi thành Date
-        const currentDate = new Date(); // Ngày hiện tại
+        const targetDate = new Date(dateString);
+        const currentDate = new Date();
 
-        // Đặt giờ của cả hai ngày về 0 để so sánh ngày chính xác
         targetDate.setHours(0, 0, 0, 0);
         currentDate.setHours(0, 0, 0, 0);
         const differenceInDays = (currentDate - targetDate) / (1000 * 60 * 60 * 24);
         if (differenceInDays === 0 || differenceInDays === -1) {
-            return 'hôm nay'; // Nếu là hôm nay hoặc hôm qua
+            return 'hôm nay';
         } else {
             const [year, month, day] = dateString.split('-');
-            return `Ngày ${day}-${month}-${year}`; // Hiển thị dạng dd-MM-yyyy
+            return `Ngày ${day}-${month}-${year}`;
         }
     }
 
     that.GetXSMB = function (){
-
-        // Thêm skeleton loader vào giao diện
         const skeletonLoader = `
         <section class="section" id="loading-section">
             <header class="section-header">
@@ -88,19 +84,15 @@ XSMB = function() {
                 </table>
             </div>
         </section>
-    `;
-        $(".content-left").html(skeletonLoader); // Hiển thị skeleton trước khi gọi API
+        `;
+        document.querySelector(".content-left").innerHTML = skeletonLoader;
 
-        $.ajax({
-            url: hostApi + '/api/xsmb',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (response.length > 0) {
-                    // Chuyển đổi thành mảng các đối tượng JSON từ trường Value
-                    const dataList = response.map(record => JSON.parse(record.Value));
-        
-                    // Hàm tạo tiêu đề
+        fetch(hostApi + '/api/xsmb')
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const dataList = data.map(record => JSON.parse(record.Value));
+
                     const createHeader = (data) => `
                         <header class="section-header">
                             <h1>${data.region} - Kết quả xổ số ${data.location} - SXMB ${data.date}</h1>
@@ -110,8 +102,7 @@ XSMB = function() {
                             </div>
                         </header>
                     `;
-        
-                    // Hàm tạo bảng kết quả xổ số
+
                     const createTable = (data) => `
                         <table class="table-result">
                             <tbody>
@@ -134,8 +125,7 @@ XSMB = function() {
                             </tbody>
                         </table>
                     `;
-        
-                    // Hàm tạo section
+
                     const createSection = (data) => `
                         <section class="section" id="kqngay_${data.date.replace(/\//g, '')}">
                             ${createHeader(data)}
@@ -144,24 +134,21 @@ XSMB = function() {
                             </div>
                         </section>
                     `;
-        
-                    // Tạo nội dung HTML
+
                     const htmlContent = dataList.map(createSection).join('');
-                    $(".content-left").html(htmlContent);
+                    document.querySelector(".content-left").innerHTML = htmlContent;
                 } else {
                     console.warn("Không có dữ liệu từ API");
-                    $("#loading-section").find("h1").text("Không có dữ liệu để hiển thị");
+                    document.querySelector("#loading-section h1").textContent = "Không có dữ liệu để hiển thị";
                 }
-            },
-            error: function (response) {
-                console.error("Lỗi khi gọi API:", response);
-                $("#loading-section").find("h1").text("Lỗi khi tải dữ liệu. Vui lòng thử lại sau");
-            }
-        });
+            })
+            .catch(error => {
+                console.error("Lỗi khi gọi API:", error);
+                document.querySelector("#loading-section h1").textContent = "Lỗi khi tải dữ liệu. Vui lòng thử lại sau";
+            });
     }
 
-    // luôn luôn gọi hàm init khi khởi tạo new
     that.init();
 }
 
-jQuery(function () { xsmb = new XSMB(); });
+document.addEventListener('DOMContentLoaded', function () { xsmb = new XSMB(); });
